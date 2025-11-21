@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <header>
+    <h1><a href="/expenses">지출 관리 대시보드</a></h1>
+    <nav>
+      <% if (locals.user) { %>
+        <span>환영합니다, <strong><%= user.username %></strong>님!</span>
+        <a href="/expenses/add">지출 추가</a>
+        <a href="/users/logout">로그아웃</a>
+      <% } else { %>
+        <a href="/users/login">로그인</a>
+        <a href="/users/register">회원가입</a>
+      <% } %>
+    </nav>
+  </header>
+  <main>

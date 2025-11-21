@@ -1,0 +1,49 @@
+<%- include('./include/_header') %>
+
+<div class="container">
+    <h2>지출 내역</h2>
+
+    <% if (expenses && expenses.length > 0) { %>
+    <table>
+        <thead>
+        <tr>
+            <th>날짜</th>
+            <th>제목</th>
+            <th>카테고리</th>
+            <th>금액</th>
+            <th>관리</th>
+        </tr>
+        </thead>
+        <tbody>
+        <% expenses.forEach(expense => { %>
+        <tr>
+            <td><%= expense.date.toISOString().slice(0, 10) %></td>
+            <td><%= expense.title %></td>
+            <td><%= expense.category %></td>
+            <td><%= expense.amount.toLocaleString() %> 원</td>
+            <td>
+            <a href="/expenses/edit/<%= expense._id %>" 
+                class="btn btn-update"
+            >
+            수정
+            </a>
+            <form
+                action="/expenses/delete/<%= expense._id %>?_method=DELETE"
+                method="POST"
+                style="display: inline"
+                onsubmit="return confirm('정말 삭제하시겠습니까?');"
+            >
+
+                <button type="submit" class="btn btn-delete">삭제</button>
+            </form>
+            </td>
+        </tr>
+        <% }); %>
+        </tbody>
+    </table>
+    <% } else { %>
+    <p>표시할 지출 내역이 없습니다. 지금 추가해보세요.</p>
+    <% } %>
+</div>
+
+<%- include('./include/_footer') %>
