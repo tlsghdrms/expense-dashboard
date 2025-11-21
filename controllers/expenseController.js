@@ -5,7 +5,7 @@ const Expense = require("../models/expenseModel");
 // @desc    Get all expenses 
 // @route   GET /expenses
 const getAllExpenses = asyncHandler(async (req, res) => {
-    const expenses = await Expense.find({ user_id: req.user_id }).sort({ date: -1 });
+    const expenses = await Expense.find({ user_id: req.user._id }).sort({ date: -1 }); // 'req.user_id' 안됨
     res.render("dashboard", { expenses: expenses, user: req.user });
 });
 
