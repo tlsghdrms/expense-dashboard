@@ -1,12 +1,49 @@
-
 const asyncHandler = require("express-async-handler");
 const Expense = require("../models/expenseModel");
 
 // @desc    Get all expenses 
 // @route   GET /expenses
 const getAllExpenses = asyncHandler(async (req, res) => {
-    const expenses = await Expense.find({ user_id: req.user_id }).sort({ date: -1 });
-    res.render("dashboard", { expenses: expenses, user: req.user });
+    let queryMonth = req.query.month;
+
+    if (!queryMonth) {
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        queryMonth = `${year}-${month}`;
+    }
+
+    const startDate = new Date(queryMonth + "-01");
+    const endDate = new Date(queryMonth + "-01");
+    endDate.setMonth(endDate.getMonth() + 1);
+
+    const expenses = await Expense.find({ 
+        user_id: req.user._id,
+        date: {
+            $gte: startDate,
+            $lt: endDate     
+        }
+    }).sort({ date: 1 });
+
+    const categoryTotals = {};
+    expenses.forEach(expense => {
+        if (categoryTotals[expense.category]) {
+            categoryTotals[expense.category] += expense.amount;
+        } else {
+            categoryTotals[expense.category] = expense.amount;
+        }
+    });
+
+    const chartLabels = Object.keys(categoryTotals);
+    const chartData = Object.values(categoryTotals);
+
+    res.render("dashboard", { 
+        expenses: expenses, 
+        user: req.user,
+        chartLabels: JSON.stringify(chartLabels),
+        chartData: JSON.stringify(chartData),
+        selectedMonth: queryMonth
+    });
 });
 
 // @desc    Show add expense form 
@@ -19,11 +56,12 @@ const getAddExpenseForm = asyncHandler(async (req, res) => {
 // @route   POST /expenses/add
 const createExpense = asyncHandler(async (req, res) => {
     const { title, amount, category, date } = req.body;
+
     if (!title || !amount || !category || !date) {
         res.status(400);
         throw new Error("모든 필수 항목(제목, 금액, 카테고리, 날짜)을 입력해주세요.");
     }
-    const expense = await Expense.create({
+    await Expense.create({
         title,
         amount,
         category,
@@ -67,7 +105,7 @@ const updateExpense = asyncHandler(async (req, res) => {
         throw new Error("접근 권한이 없습니다.");
     }
 
-    const updatedExpense = await Expense.findByIdAndUpdate(
+    await Expense.findByIdAndUpdate(
         req.params.id,
         req.body,
         { new: true }

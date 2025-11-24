@@ -27,8 +27,7 @@ const registerUser = asyncHandler(async (req, res) => {
         throw new Error("이미 존재하는 아이디입니다.");
     }
 
-    const salt = await bcrypt.getSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
+    const hashedPassword = await bcrypt.hash(password, 10);
 
     const user = await User.create({ username, password: hashedPassword });
 

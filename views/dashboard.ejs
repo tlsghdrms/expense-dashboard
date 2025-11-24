@@ -2,7 +2,26 @@
 
 <div class="container">
     <h2>지출 내역</h2>
+    <div class="filter-container" style="margin: 20px 0; text-align: right;">
+        <form action="/expenses" method="GET" style="display: inline-block;">
+            <label for="month" style="font-weight: bold; margin-right: 10px;">기간 선택:</label>
+            <input 
+                type="month" 
+                id="month" 
+                name="month" 
+                value="<%= selectedMonth %>"
+                style="padding: 5px; border-radius: 4px; border: 1px solid #ccc;"
+            >
+            <button type="submit" class="btn btn-primary" style="padding: 6px 12px; font-size: 0.9rem; margin-left: 5px;">
+                조회
+            </button>
+        </form>
+    </div>
 
+    <div class="chart-container" style="width: 50%; margin: 20px auto;">
+        <canvas id="expenseChart"></canvas>
+    </div>
+    
     <% if (expenses && expenses.length > 0) { %>
     <table>
         <thead>
@@ -46,4 +65,76 @@
     <% } %>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const labels =  <%- chartLabels %>;
+    const data = <%- chartData %>;
+
+    // 데이터가 있을 때만 차트 그리기
+    if (labels.length > 0) {
+        const ctx = document.getElementById('expenseChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: '지출 금액',
+                    data: data,
+                    backgroundColor: [
+                        '#FF6384', // 빨강
+                        '#36A2EB', // 파랑
+                        '#FFCE56', // 노랑
+                        '#4BC0C0', // 청록
+                        '#9966FF', // 보라
+                        '#FF9F40'  // 주황
+                    ],
+                    hoverOffset: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                    },
+                    title: {
+                        display: true,
+                        text: '카테고리별 지출 통계'
+                    }
+                }
+            }
+        });
+    }
+    const aiBtn = document.getElementById('ai-btn');
+    
+    if (aiBtn) {
+        aiBtn.addEventListener('click', async () => {
+            const monthInput = document.getElementById('month').value;
+            const [year, month] = monthInput.split('-');
+
+            const originalText = aiBtn.innerText;
+            aiBtn.innerText = "🤔 분석 중입니다...";
+            aiBtn.disabled = true;
+
+            try {
+                const response = await fetch('/expenses/analyze', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ year, month })
+                });
+
+                const data = await response.json();
+                
+                alert("📢 AI 분석 결과:\n\n" + data.message);
+
+            } catch (error) {
+                console.error(error);
+                alert("분석 요청에 실패했습니다.");
+            } finally {
+                aiBtn.innerText = originalText;
+                aiBtn.disabled = false;
+            }
+        });
+    }
+</script>
 <%- include('./include/_footer') %>
