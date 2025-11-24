@@ -56,7 +56,6 @@ const getAddExpenseForm = asyncHandler(async (req, res) => {
 // @route   POST /expenses/add
 const createExpense = asyncHandler(async (req, res) => {
     const { title, amount, category, date } = req.body;
-
     if (!title || !amount || !category || !date) {
         res.status(400);
         throw new Error("모든 필수 항목(제목, 금액, 카테고리, 날짜)을 입력해주세요.");
