@@ -1,0 +1,176 @@
+
+/* --- 기본 & 공통 레이아웃 --- */
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+        Helvetica, Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f7f6;
+    color: #333;
+}
+
+main {
+    padding-bottom: 50px;
+}
+
+.container {
+    max-width: 960px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* --- 헤더 --- */
+header {
+    background-color: #ffffff;
+    padding: 20px 40px;
+    border-bottom: 1px solid #e0e0e0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 1.5rem;
+}
+
+header h1 a {
+    color: #222;
+    text-decoration: none;
+}
+
+header nav a {
+    background-color: #007bff;
+    color: #ffffff;
+    padding: 8px 15px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+header nav a:hover {
+    background-color: #0056b3;
+}
+
+/* --- 푸터 --- */
+footer {
+    text-align: center;
+    padding: 20px;
+    background-color: #343a40;
+    color: #f8f9fa;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+}
+
+footer p {
+    margin: 0;
+    font-size: 0.9rem;
+}
+
+/* --- 폼 (add.ejs, update.ejs) --- */
+h2 {
+    border-bottom: 2px solid #f0f0f0;
+    padding-bottom: 10px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+
+.form-group input[type="text"],
+.form-group input[type="number"],
+.form-group input[type="date"],
+.form-group select {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    font-size: 1rem;
+}
+
+/* --- 버튼 (공통) --- */
+.btn,
+button {
+    padding: 12px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 500;
+    text-decoration: none;
+    display: inline-block;
+    text-align: center;
+}
+
+.btn-primary,
+button[type="submit"] {
+    background-color: #007bff;
+    color: white;
+}
+.btn-primary:hover,
+button[type="submit"]:hover {
+    background-color: #0056b3;
+}
+
+/* --- 테이블 (dashboard.ejs) --- */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+table th,
+table td {
+    border-bottom: 1px solid #ddd;
+    padding: 12px;
+    text-align: left;
+}
+
+table th {
+    background-color: #f9f9f9;
+}
+
+table tr:hover {
+    background-color: #f1f1f1;
+}
+
+/* --- 대시보드 내 버튼 --- */
+.btn-update {
+    background-color: #28a745;
+    color: white;
+    padding: 5px 10px;
+    font-size: 0.9rem;
+}
+.btn-update:hover {
+    background-color: #218838;
+}
+
+.btn.btn-delete {
+    background-color: #dc3545;
+    color: white;
+    padding: 5px 10px;
+    font-size: 0.9rem;
+}
+.btn.btn-delete:hover {
+    background-color: #c82333;
+}

@@ -1,0 +1,48 @@
+<%- include('./include/_header') %>
+
+<div class="container">
+<h2>새 지출 내역 추가</h2>
+<p>새로운 지출 내역의 정보를 입력합니다.</p>
+
+<form action="/expenses/add" method="POST">
+    <div class="form-group">
+    <label for="title">제목</label>
+    <input
+        type="text"
+        id="title"
+        name="title"
+        placeholder="예: 다이소"
+        required
+    />
+    </div>
+    <div class="form-group">
+    <label for="amount">금액</label>
+    <input
+        type="number"
+        id="amount"
+        name="amount"
+        placeholder="예: 10000"
+        required
+    />
+    </div>
+    <div class="form-group">
+    <label for="category">카테고리</label>
+    <select id="category" name="category" required>
+        <option value="">-- 선택 --</option>
+        <option value="식비">식비</option>
+        <option value="교통">교통</option>
+        <option value="여가">여가</option>
+        <option value="기타">기타</option>
+    </select>
+    </div>
+    <div class="form-group">
+    <label for="date">날짜</label>
+    <input type="date" id="date" name="date" required />
+    </div>
+    <div class="form-group">
+    <button type="submit" class="btn btn-primary">저장하기</button>
+    </div>
+</form>
+</div>
+
+<%- include('./include/_footer') %>
