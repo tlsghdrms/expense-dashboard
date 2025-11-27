@@ -1,32 +1,43 @@
 const asyncHandler = require("express-async-handler");
 const Expense = require("../models/expenseModel");
+const User = require("../models/userModel");
 
-// @desc    Get all expenses 
+// @desc    Get expenses by month & Category & Budget Info 
 // @route   GET /expenses
 const getAllExpenses = asyncHandler(async (req, res) => {
-    let queryMonth = req.query.month;
+    let { year, month, category } = req.query;
+    const now = new Date();
 
-    if (!queryMonth) {
-        const now = new Date();
-        const year = now.getFullYear();
-        const month = String(now.getMonth() + 1).padStart(2, '0');
-        queryMonth = `${year}-${month}`;
-    }
+    if (!year) year = now.getFullYear();
+    if (!month) month = now.getMonth() + 1;
 
-    const startDate = new Date(queryMonth + "-01");
-    const endDate = new Date(queryMonth + "-01");
+    // 숫자로 변환 (비교 및 계산용)
+    const selectedYear = Number(year);
+    const selectedMonth = Number(month);
+
+    // 날짜 범위 계산    
+    const paddedMonth = String(selectedMonth).padStart(2, '0');
+    const startDate = new Date(`${selectedYear}-${selectedMonth}-01`);
+    const endDate = new Date(startDate);
     endDate.setMonth(endDate.getMonth() + 1);
 
-    const expenses = await Expense.find({ 
+    // DB 검색 조건
+    const dbQuery = {
         user_id: req.user._id,
-        date: {
-            $gte: startDate,
-            $lt: endDate     
-        }
-    }).sort({ date: 1 });
+        date: { $gte: startDate, $lt: endDate }
+    };
+
+    if (category && category !== "all") {
+        dbQuery.category = category;
+    }
+    
+    const expenses = await Expense.find(dbQuery).sort({ date: 1});
 
     const categoryTotals = {};
+    let totalSpent = 0;
+
     expenses.forEach(expense => {
+        totalSpent += expense.amount;
         if (categoryTotals[expense.category]) {
             categoryTotals[expense.category] += expense.amount;
         } else {
@@ -37,12 +48,18 @@ const getAllExpenses = asyncHandler(async (req, res) => {
     const chartLabels = Object.keys(categoryTotals);
     const chartData = Object.values(categoryTotals);
 
-    res.render("dashboard", { 
-        expenses: expenses, 
-        user: req.user,
+    // 유저 정보 예산 포함
+    const user = await User.findById(req.user._id);
+
+    res.render("dashboard", {
+        expenses: expenses,
+        user: user,
         chartLabels: JSON.stringify(chartLabels),
         chartData: JSON.stringify(chartData),
-        selectedMonth: queryMonth
+        selectedYear: selectedYear,
+        selectedMonth: selectedMonth,
+        selectedCategory: category || "all",
+        totalSpent: totalSpent
     });
 });
 
@@ -56,10 +73,12 @@ const getAddExpenseForm = asyncHandler(async (req, res) => {
 // @route   POST /expenses/add
 const createExpense = asyncHandler(async (req, res) => {
     const { title, amount, category, date } = req.body;
+
     if (!title || !amount || !category || !date) {
         res.status(400);
         throw new Error("모든 필수 항목(제목, 금액, 카테고리, 날짜)을 입력해주세요.");
     }
+
     await Expense.create({
         title,
         amount,
@@ -76,34 +95,16 @@ const createExpense = asyncHandler(async (req, res) => {
 const getEditExpenseForm = asyncHandler(async (req, res) => {
     const expense = await Expense.findById(req.params.id);
 
-    if (!expense) {
-        res.status(404);
-        throw new Error("지출 내역을 찾을 수 없습니다.");
+    if (!expense || expense.user_id.toString() !== req.user._id.toString()) {
+        res.status(401); throw new Error("권한 없음"); 
     }
-
-    if (expense.user_id.toString() !== req.user._id.toString()) {
-        res.status(401);
-        throw new Error("접근 권한이 없습니다.");
-    }
-
+    
     res.render("update", { expense: expense, user: req.user });
 });
 
 // @desc    Update expense
 // @route   PUT /expenses/edit/:id
 const updateExpense = asyncHandler(async (req, res) => {
-    const expense = await Expense.findById(req.params.id);
-
-    if(!expense) {
-        res.status(404);
-        throw new Error("지출 내역을 찾을 수 없습니다.");
-    }
-
-    if (expense.user_id.toString() !== req.user._id.toString()) {
-        res.status(401);
-        throw new Error("접근 권한이 없습니다.");
-    }
-
     await Expense.findByIdAndUpdate(
         req.params.id,
         req.body,
@@ -116,24 +117,22 @@ const updateExpense = asyncHandler(async (req, res) => {
 // @desc    Delete expense
 // @route   DELETE /expenses/delete/:id
 const deleteExpense = asyncHandler(async (req, res) => {
-    const expense = await Expense.findById(req.params.id);
-
-    if (!expense) {
-        res.status(404);
-        throw new Error("지출 내역을 찾을 수 없습니다.");
-    }
-    if (expense.user_id.toString() !== req.user._id.toString()) {
-        res.status(401);
-        throw new Error("접근 권한이 없습니다. (본인 내역 아님)");
-    }
-
     await Expense.findByIdAndDelete(req.params.id);
     
     res.redirect("/expenses");
 });
 
+const updateBudget = asyncHandler(async (req, res) => {
+    const { budget } = req.body;
+
+    await User.findByIdAndUpdate(req.user._id, { budget: budget });
+
+    res.redirect("/expenses");
+});
+
 module.exports = {
     getAllExpenses,
+    updateBudget,
     getAddExpenseForm,
     createExpense,
     getEditExpenseForm,
