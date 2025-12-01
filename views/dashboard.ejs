@@ -1,136 +1,160 @@
 <%- include('./include/_header') %>
 
 <div class="container">
+    
+    <h2 style="margin-bottom: 25px; font-size: 1.8rem; border-bottom: none;">
+        📊 <span style="color: #036b3f; font-weight: 800;"><%= selectedMonth %>월</span> 소비 리포트
+    </h2>
+
     <div class="summary-card" style="
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        padding: 25px;
-        border-radius: 12px;
-        margin-bottom: 30px;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        background-color: #f8f9fa;
+        border-left: 6px solid #036b3f;
+        padding: 30px;
+        border-radius: 8px;
+        margin-bottom: 40px;
         display: flex;
         justify-content: space-between;
-        align-items: flex-start; 
+        align-items: flex-start;
+        flex-wrap: wrap;
+        gap: 20px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.03);
     ">
-        <div>
-            <h3 style="margin: 0 0 5px 0; font-size: 1.1rem; opacity: 0.9;">
-                📅 <%= selectedMonth %>월 총 지출
+        <div style="flex: 1; min-width: 280px;">
+            <h3 style="margin: 0 0 10px 0; font-size: 1.1rem; color: #666; font-weight: normal;">
+                이번 달 총 지출 금액
             </h3>
-            <p style="margin: 0; font-size: 2.5rem; font-weight: bold;">
-                <%= totalSpent.toLocaleString() %> <span style="font-size: 1rem;">원</span>
+            <p style="margin: 0; font-size: 2.5rem; font-weight: 800; color: #333; letter-spacing: -1px;">
+                <%= totalSpent.toLocaleString() %> <span style="font-size: 1.2rem; font-weight: normal; color: #555;">원</span>
             </p>
+
+            <% if (typeof compareText !== 'undefined') { %>
+                <div style="margin-top: 10px; font-size: 0.95rem; font-weight: 600; color: <%= isIncrease ? '#dc3545' : '#036b3f' %>; background: <%= isIncrease ? 'rgba(220, 53, 69, 0.05)' : 'rgba(3, 107, 63, 0.05)' %>; display: inline-block; padding: 5px 10px; border-radius: 20px;">
+                    <%= compareText %>
+                </div>
+            <% } %>
+
+            <% if (user.budget && user.budget > 0) { 
+                const percent = Math.min((totalSpent / user.budget) * 100, 100);
+                let statusColor = "#036b3f"; 
+                if(percent >= 80) statusColor = "#ffc107"; 
+                if(percent >= 100) statusColor = "#dc3545"; 
+            %>
+                <div style="margin-top: 25px;">
+                    <div style="display: flex; justify-content: space-between; font-size: 0.85rem; color: #666; margin-bottom: 5px;">
+                        <span>예산 소진율</span>
+                        <span><%= Math.round(percent) %>%</span>
+                    </div>
+                    <div style="background: #e9ecef; height: 10px; width: 100%; border-radius: 5px; overflow: hidden;">
+                        <div style="background: <%= statusColor %>; width: <%= percent %>%; height: 100%;"></div>
+                    </div>
+                    <p style="margin: 5px 0 0 0; font-size: 0.85rem; color: #888; text-align: right;">
+                        목표 <%= user.budget.toLocaleString() %>원
+                    </p>
+                </div>
+            <% } else { %>
+                <div style="margin-top: 20px; font-size: 0.9rem; color: #888; background: #fff; padding: 10px; border: 1px dashed #ccc; display: inline-block;">
+                    💡 우측에서 목표 예산을 설정해보세요.
+                </div>
+            <% } %>
         </div>
         
-        <div style="text-align: right; display: flex; flex-direction: column; align-items: flex-end; gap: 10px;">
+        <div style="text-align: right; display: flex; flex-direction: column; align-items: flex-end; gap: 15px;">
             
-            <form action="/expenses" method="GET" style="display: flex; gap: 8px;">
+            <form action="/expenses" method="GET" style="display: flex; gap: 5px; background: #fff; padding: 5px; border: 1px solid #eee; border-radius: 4px;">
                 <input type="hidden" name="category" value="<%= selectedCategory %>">
-
-                <select name="year" onchange="this.form.submit()" style="
-                    padding: 6px 10px; 
-                    border: 1px solid rgba(255,255,255,0.3); 
-                    border-radius: 20px; 
-                    font-size: 0.9rem;
-                    background-color: rgba(255, 255, 255, 0.2); 
-                    color: white;
-                    cursor: pointer;
-                    outline: none;
-                ">
+                <select name="year" onchange="this.form.submit()" style="padding: 8px; border: none; font-weight: 600; color: #333; cursor: pointer; outline: none;">
                     <% for(let y = 2023; y <= 2030; y++) { %>
-                        <option value="<%= y %>" style="color: black;" <%= y == selectedYear ? 'selected' : '' %>>
-                            <%= y %>년
-                        </option>
+                        <option value="<%= y %>" <%= y == selectedYear ? 'selected' : '' %>><%= y %>년</option>
                     <% } %>
                 </select>
-
-                <select name="month" onchange="this.form.submit()" style="
-                    padding: 6px 10px; 
-                    border: 1px solid rgba(255,255,255,0.3); 
-                    border-radius: 20px; 
-                    font-size: 0.9rem;
-                    background-color: rgba(255, 255, 255, 0.2); 
-                    color: white;
-                    cursor: pointer;
-                    outline: none;
-                ">
+                <select name="month" onchange="this.form.submit()" style="padding: 8px; border: none; font-weight: 600; color: #036b3f; cursor: pointer; outline: none;">
                     <% for(let m = 1; m <= 12; m++) { %>
-                        <option value="<%= m %>" style="color: black;" <%= m == selectedMonth ? 'selected' : '' %>>
-                            <%= m %>월
-                        </option>
+                        <option value="<%= m %>" <%= m == selectedMonth ? 'selected' : '' %>><%= m %>월</option>
                     <% } %>
                 </select>
             </form>
 
-            <% if (user.budget > 0) { 
-                const percent = Math.min((totalSpent / user.budget) * 100, 100);
-                let statusMsg = "여유 있어요! 😊";
-                if(percent >= 80) statusMsg = "아껴 쓰세요! 😐";
-                if(percent >= 100) statusMsg = "예산 초과! 🚨";
-            %>
-            <div style="margin-top: 5px;">
-                <p style="margin: 0; font-size: 0.9rem; opacity: 0.9;">
-                    목표 예산: <%= user.budget.toLocaleString() %>원
-                </p>
-                <p style="margin: 2px 0 0 0; font-weight: bold; font-size: 1.1rem;">
-                    <%= statusMsg %>
-                </p>
-            </div>
-            <% } %>
+            <form action="/expenses/budget" method="POST" style="display: flex; align-items: center; gap: 0;">
+                <input type="number" name="budget" value="<%= user.budget %>" placeholder="예산 입력" 
+                    style="width: 120px; padding: 8px 12px; text-align: right; border: 1px solid #ccc; border-right: none; border-radius: 4px 0 0 4px; outline: none;"
+                >
+                <button type="submit" style="background: #555; color: white; border: 1px solid #555; padding: 8px 15px; font-size: 0.9rem; border-radius: 0 4px 4px 0; cursor: pointer;">예산 설정</button>
+            </form>
+
         </div>
     </div>
 
-    <div class="chart-container" style="width: 60%; margin: 0 auto 40px auto;">
+    <div class="chart-container" style="width: 50%; margin: 0 auto 60px auto;">
         <canvas id="expenseChart"></canvas>
     </div>
 
-    <div class="list-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-        <h3 style="margin: 0;">📝 상세 내역</h3>
-        <div style="display: flex; gap: 10px; align-items: center;">
-            <a href="/expenses/add" class="btn btn-primary" style="font-size: 0.9rem;">+ 지출 추가</a>
+    <div class="list-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 2px solid #036b3f; padding-bottom: 10px;">
+        <h3 style="margin: 0; color: #333; font-size: 1.3rem; font-weight: 700;">
+            📝 상세 거래 내역
+        </h3>
+        
+        <div style="display: flex; gap: 5px;">
+            <% const cats = ['all', '식비', '교통', '여가', '기타']; const catNames = ['전체', '식비', '교통', '여가', '기타']; %>
+            <% cats.forEach((c, i) => { %>
+                <a href="/expenses?year=<%= selectedYear %>&month=<%= selectedMonth %>&category=<%= c %>" 
+                   style="
+                       padding: 8px 16px; 
+                       font-size: 0.9rem; 
+                       border-radius: 20px;
+                       font-weight: 600;
+                       background: <%= selectedCategory === c ? '#036b3f' : '#f1f3f5' %>; 
+                       color: <%= selectedCategory === c ? '#fff' : '#495057' %>;
+                       text-decoration: none;
+                       transition: all 0.2s;
+                   ">
+                   <%= catNames[i] %>
+                </a>
+            <% }); %>
+            <a href="/expenses/add" class="btn btn-primary" style="margin-left: 10px; border-radius: 20px; padding: 8px 16px;">+ 등록</a>
         </div>
     </div>
 
     <% if (expenses && expenses.length > 0) { %>
-    <table style="width: 100%; border-collapse: collapse; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+    <table style="border-top: none;">
         <thead>
-        <tr style="background-color: #f8f9fa; border-bottom: 2px solid #dee2e6;">
-            <th style="padding: 12px;">날짜</th>
-            <th style="padding: 12px;">내용</th>
-            <th style="padding: 12px;">카테고리</th>
-            <th style="padding: 12px;">금액</th>
-            <th style="padding: 12px;">관리</th>
+        <tr style="background: #fff;">
+            <th width="12%" style="color: #888; font-weight: 500; border-bottom: 1px solid #ddd;">날짜</th>
+            <th width="38%" style="color: #888; font-weight: 500; border-bottom: 1px solid #ddd;">내용</th>
+            <th width="15%" style="color: #888; font-weight: 500; border-bottom: 1px solid #ddd;">분류</th>
+            <th width="20%" style="text-align: right; color: #888; font-weight: 500; border-bottom: 1px solid #ddd;">금액</th>
+            <th width="15%" style="text-align: center; color: #888; font-weight: 500; border-bottom: 1px solid #ddd;">관리</th>
         </tr>
         </thead>
         <tbody>
         <% expenses.forEach(expense => { %>
-        <tr style="border-bottom: 1px solid #eee;">
-            <td style="padding: 12px;"><%= expense.date.toISOString().slice(0, 10) %></td>
-            <td style="padding: 12px; font-weight: 500;"><%= expense.title %></td>
-            <td style="padding: 12px;">
-                <span style="
-                    padding: 4px 8px; 
-                    border-radius: 12px; 
-                    font-size: 0.8rem;
-                    background-color: #e9ecef;
-                    color: #495057;
-                "><%= expense.category %></span>
+        <tr>
+            <td style="color: #666;"><%= expense.date.toISOString().slice(0, 10) %></td>
+            <td style="font-weight: 600; color: #333;"><%= expense.title %></td>
+            <td>
+                <span style="font-size: 0.8rem; color: #555; background: #f1f3f5; padding: 3px 8px; border-radius: 4px;">
+                    <%= expense.category %>
+                </span>
             </td>
-            <td style="padding: 12px; color: #c53030; font-weight: bold;">
-                -<%= expense.amount.toLocaleString() %> 원
+            <td style="text-align: right; color: #036b3f; font-weight: 700; font-size: 1.05rem;">
+                -<%= expense.amount.toLocaleString() %>
             </td>
-            <td style="padding: 12px;">
-                <a href="/expenses/edit/<%= expense._id %>" style="margin-right: 5px; text-decoration: none;">✏️</a>
-                <form action="/expenses/delete/<%= expense._id %>?_method=DELETE" method="POST" style="display: inline" onsubmit="return confirm('삭제하시겠습니까?');">
-                    <button type="submit" style="border: none; background: none; cursor: pointer;">🗑️</button>
-                </form>
+            <td style="text-align: center; white-space: nowrap;">
+                <div style="display: inline-flex; align-items: center; justify-content: center; gap: 10px;">
+                    <a href="/expenses/edit/<%= expense._id %>" style="color: #999; text-decoration: none; font-size: 0.9rem;">수정</a>
+                    <span style="color: #ddd; font-size: 0.8rem;">|</span>
+                    <form action="/expenses/delete/<%= expense._id %>?_method=DELETE" method="POST" style="margin: 0;">
+                        <button type="submit" style="border: none; background: none; cursor: pointer; color: #dc3545; font-size: 0.9rem; padding: 0;">삭제</button>
+                    </form>
+                </div>
             </td>
         </tr>
         <% }); %>
         </tbody>
     </table>
     <% } else { %>
-    <div style="text-align: center; padding: 50px; background: #f8f9fa; border-radius: 8px; color: #868e96;">
-        <p>작성된 지출 내역이 없습니다.</p>
+    <div style="text-align: center; padding: 80px; color: #bbb; background: #fcfcfc; border-bottom: 1px solid #eee; margin-top: 20px;">
+        <div style="font-size: 3rem; margin-bottom: 10px;">📭</div>
+        <p>이번 달 거래 내역이 없습니다.</p>
     </div>
     <% } %>
 </div>
@@ -149,17 +173,22 @@
                 datasets: [{
                     data: data,
                     backgroundColor: [
-                        '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40'
+                        '#036b3f', '#0a8a54', '#4caf50', '#81c784', '#a39346', '#d4c78c'
                     ],
-                    hoverOffset: 4
+                    borderWidth: 2,
+                    borderColor: '#ffffff'
                 }]
             },
             options: {
                 responsive: true,
                 plugins: {
-                    legend: { position: 'bottom' },
-                    title: { display: true, text: '카테고리별 지출 비율' }
-                }
+                    legend: { 
+                        position: 'right',
+                        labels: { usePointStyle: true, padding: 20, font: { size: 12 } }
+                    },
+                    title: { display: false }
+                },
+                cutout: '65%'
             }
         });
     }

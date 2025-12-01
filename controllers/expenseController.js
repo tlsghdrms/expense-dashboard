@@ -50,7 +50,7 @@ const getAllExpenses = asyncHandler(async (req, res) => {
 
     // 유저 정보 예산 포함
     const user = await User.findById(req.user._id);
-
+    
     res.render("dashboard", {
         expenses: expenses,
         user: user,
@@ -130,6 +130,55 @@ const updateBudget = asyncHandler(async (req, res) => {
     res.redirect("/expenses");
 });
 
+// @desc    Get spending ranking
+// @route   GET /expenses/ranking
+const getExpenseRanking = asyncHandler(async (req, res) => {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = now.getMonth() + 1;
+    
+    const startDate = new Date(`${year}-${String(month).padStart(2,'0')}-01`);
+    const endDate = new Date(startDate);
+    endDate.setMonth(endDate.getMonth() + 1);
+
+    // 모든 사용자의 이번 달 총 지출액 계산
+    const rankingStats = await Expense.aggregate([
+        {
+            $match: {
+                date: { $gte: startDate, $lt: endDate }
+            }
+        },
+        {
+            $group: {
+                _id: "$user_id",
+                totalAmount: { $sum: "$amount" }
+            }
+        },
+        {
+            $sort: { totalAmount: 1 } // (1등 = 가장 절약한 사람)
+        }
+    ]);
+
+    // 내 등수 찾기
+    const myStat = rankingStats.find(stat => stat._id.toString() === req.user._id.toString());
+    const myTotal = myStat ? myStat.totalAmount : 0;
+
+    let myRank = rankingStats.findIndex(stat => stat._id.toString() === req.user._id.toString()) + 1;
+    if (myRank === 0) myRank = rankingStats.length + 1;
+
+    const totalUsers = rankingStats.length || 1; // 0으로 나누기 방지
+    const percentile = Math.round((myRank / totalUsers) * 100); // 상위 몇 %인지 계산
+
+    res.render("ranking", {
+        user: req.user,
+        month: month,
+        myTotal: myTotal,
+        myRank: myRank,
+        totalUsers: totalUsers,
+        percentile: percentile
+    });
+});
+
 module.exports = {
     getAllExpenses,
     updateBudget,
@@ -138,4 +187,5 @@ module.exports = {
     getEditExpenseForm,
     updateExpense,
     deleteExpense,
+    getExpenseRanking
 };

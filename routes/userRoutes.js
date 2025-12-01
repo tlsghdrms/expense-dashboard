@@ -1,6 +1,7 @@
 
 const express = require("express");
 const router = express.Router();
+const { authMiddleware } = require("../middlewares/authMiddleware");
 
 const {
   getRegisterForm,
@@ -8,6 +9,7 @@ const {
   getLoginForm,
   loginUser,
   logoutUser,
+  withdrawUser,
 } = require("../controllers/userController");
 
 router
@@ -23,5 +25,7 @@ router
 router
 .route("/logout")
 .get(logoutUser);
+
+router.route("/withdraw", authMiddleware, withdrawUser);
 
 module.exports = router;

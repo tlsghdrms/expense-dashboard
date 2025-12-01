@@ -1,0 +1,109 @@
+<%- include('./include/_header') %>
+
+<style>
+    .hero-section {
+        text-align: center;
+        padding: 80px 20px;
+        background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+        border-radius: 0 0 50% 50% / 20px;
+        margin-bottom: 50px;
+    }
+    
+    .hero-title {
+        font-size: 3rem;
+        font-weight: 800;
+        color: #333;
+        margin-bottom: 15px;
+    }
+    
+    .hero-subtitle {
+        font-size: 1.2rem;
+        color: #666;
+        margin-bottom: 40px;
+    }
+
+    .feature-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 30px;
+        max-width: 1000px;
+        margin: 0 auto 80px auto;
+        padding: 0 20px;
+    }
+
+    .feature-card {
+        background: white;
+        padding: 30px;
+        border-radius: 15px;
+        text-align: center;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        transition: transform 0.3s ease;
+    }
+
+    .feature-card:hover {
+        transform: translateY(-10px);
+    }
+
+    .feature-icon {
+        font-size: 3rem;
+        margin-bottom: 20px;
+        display: block;
+    }
+
+    .feature-card h3 {
+        margin: 0 0 10px 0;
+        color: #036b3f;
+    }
+
+    .cta-button {
+        display: inline-block;
+        padding: 15px 40px;
+        font-size: 1.2rem;
+        font-weight: bold;
+        color: white;
+        background-color: #036b3f;
+        border-radius: 30px;
+        text-decoration: none;
+        box-shadow: 0 5px 15px rgba(3, 107, 63, 0.3);
+        transition: all 0.3s ease;
+    }
+
+    .cta-button:hover {
+        background-color: #024d2e;
+        transform: scale(1.05);
+    }
+</style>
+
+<div class="hero-section">
+    <h1 class="hero-title">스마트한 대학생을 위한<br><span style="color:#036b3f;">KU은행</span> 지출 관리</h1>
+    <p class="hero-subtitle">
+        용돈 기입부터 예산 관리, 객관적인 소비 순위까지.<br>
+        지금 바로 체계적인 자산 관리를 시작해보세요.
+    </p>
+    
+    <% if (user) { %>
+        <a href="/expenses" class="cta-button">나의 지출 보러가기 →</a>
+    <% } else { %>
+        <a href="/users/login" class="cta-button">지금 시작하기</a>
+    <% } %>
+</div>
+
+<div class="feature-grid">
+    <div class="feature-card">
+        <span class="feature-icon">📊</span>
+        <h3>월별 지출 분석</h3>
+        <p>이번 달 어디에 돈을 많이 썼을까요?<br>카테고리별 차트로 한눈에 확인하세요.</p>
+    </div>
+    <div class="feature-card">
+        <span class="feature-icon">💰</span>
+        <h3>목표 예산 설정</h3>
+        <p>한 달 목표 금액을 설정하고<br>실시간으로 남은 예산을 체크하세요.</p>
+    </div>
+    <div class="feature-card">
+        <span class="feature-icon">🏆</span>
+        <h3>소비 랭킹</h3>
+        <p>나는 절약왕일까요 과소비러일까요?<br>다른 사람들과 내 소비 습관을 비교해보세요.</p>
+    </div>
+</div>
+
+<%- include('./include/_footer') %>

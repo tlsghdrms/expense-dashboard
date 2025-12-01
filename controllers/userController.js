@@ -1,6 +1,7 @@
 
 const asyncHandler = require("express-async-handler");
 const User = require("../models/userModel");
+const Expense = require("../models/expenseModel");
 const bcrypt = require("bcryptjs"); 
 const jwt = require("jsonwebtoken");
 
@@ -86,10 +87,29 @@ const logoutUser = (req, res) => {
     res.redirect("/users/login");
 };
 
+//@desc Delete user & expenses
+//@route DELETE /users/withdraw
+const withdrawUser = asyncHandler(async(req, res) => {
+    const userId = req.user._id;
+
+    await Expense.deleteMany({ user_id: userId });
+    await User.findByIdAndDelete(userId);
+
+    res.clearCookie("token", {
+        httpOnly: true,
+        path: "/",
+    });
+
+    console.log(`회원 탈퇴 완료: ${req.user.username}`);
+
+    res.redirect("/");
+});
+
 module.exports = {
   getRegisterForm,
   registerUser,
   getLoginForm,
   loginUser,
   logoutUser,
+  withdrawUser,
 };

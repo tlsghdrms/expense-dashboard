@@ -3,6 +3,8 @@ const dbConnect = require("./config/dbConnect");
 const path = require("path");
 const methodOverride = require("method-override");
 const cookieParser = require("cookie-parser");
+const jwt = require("jsonwebtoken");
+const User = require("./models/userModel");
 
 const app = express();
 const port = 3000;
@@ -18,6 +20,22 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride("_method"));
 app.use(cookieParser());
+
+app.get("/", async(req, res) => {
+    let user = null;
+    const token = req.cookies.token;
+
+    if (token) {
+        try {
+            const decoded = jwt.verify(token, process.env.JWT_SECRET);
+            user = await User.findById(decoded.id).select("-password");
+        } catch(error) {
+            user = null;
+        }
+    }
+
+    res.render("index", { user: user });
+});
 
 // 라우터 등록
 app.use("/users", require("./routes/userRoutes"));

@@ -12,10 +12,14 @@ const {
     getEditExpenseForm,
     updateExpense,
     deleteExpense,
+    updateBudget,
+    getExpenseRanking
 } = require("../controllers/expenseController");
 
 router.route("/").get(getAllExpenses);
+router.route("/ranking").get(getExpenseRanking);
 router.route("/add").get(getAddExpenseForm).post(createExpense);
+router.route("/budget").post(updateBudget);
 router.route("/edit/:id").get(getEditExpenseForm).put(updateExpense);
 router.route("/delete/:id").delete(deleteExpense);
 

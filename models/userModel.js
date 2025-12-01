@@ -13,6 +13,10 @@ const userSchema = new mongoose.Schema(
         type: String,
         required: [true, "비밀번호를 입력해주세요."],
         },
+        budget: {
+            type: Number,
+            default: 0
+        }
     },
     {
         timestamps: true,
