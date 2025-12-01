@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>KU은행 - 지출 관리</title>
+  <title>지출 관리 대시보드</title>
   <link rel="stylesheet" href="/css/style.css">
   <style>
     body { margin: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
@@ -39,14 +39,14 @@
 
     .nav-menu {
         display: flex;
-        gap: 70px; 
+        gap: 50px; 
     }
     .nav-menu a {
         text-decoration: none;
         color: #444;
         font-weight: 600;
-        font-size: 1.5rem;
-        padding: 10px 18px;
+        font-size: 1.2rem;
+        padding: 10px 15px;
         border-radius: 25px;
         background-color: transparent; 
         transition: all 0.2s ease-in-out; 
@@ -62,21 +62,22 @@
         align-items: center;
         gap: 15px;
     }
-    .logout-btn {
+    
+    .user-btn {
         font-size: 0.9rem;
-        color: #555;
-        text-decoration: none;
+        color: #555; text-decoration: none;
         border: 1px solid #ddd;
         padding: 6px 14px;
         border-radius: 4px;
         transition: background 0.2s;
     }
-    .logout-btn:hover {
-        background-color: #f8f9fa;
-        color: #d6336c;
-        border-color: #d6336c;
-    }
     
+    .user-btn:hover {
+        background-color: #f8f9fa;
+        color: #036b3f;
+        border-color: #036b3f;
+    }
+
     .auth-link {
         color: #555;
         text-decoration: none;
@@ -102,6 +103,7 @@
       <% if (locals.user) { %>
         <a href="/expenses">지출 내역</a>
         <a href="/expenses/ranking">소비 랭킹</a>
+        <a href="/users/mypage">마이페이지</a>
       <% } %>
     </nav>
 
@@ -110,22 +112,9 @@
         <span style="color: #444; font-size: 0.95rem;">
             안녕하세요, <strong><%= user.username %></strong>님
         </span>
-        <a href="/users/logout" class="logout-btn">로그아웃</a>
-        <form action="/users/withdraw?_method=DELETE" method="POST" style="margin: 0;" 
-            onsubmit="return confirm('정말 탈퇴하시겠습니까?\n작성한 모든 지출 내역이 영구적으로 삭제됩니다.');">
-          <button type="submit" style="
-              background: none; 
-              border: none; 
-              color: #999; 
-              font-size: 0.85rem; 
-              text-decoration: underline; 
-              cursor: pointer; 
-              padding: 0;
-              margin-left: 5px;
-          " onmouseover="this.style.color='#dc3545'" onmouseout="this.style.color='#999'">
-              회원탈퇴
-          </button>
-        </form>
+
+        <a href="/users/logout" class="user-btn" style="color: #d6336c; border-color: #f8d7da;">로그아웃</a>
+
         <% } else { %>
           <a href="/users/login" class="auth-link">로그인</a>
           <span style="color: #ddd;">|</span>

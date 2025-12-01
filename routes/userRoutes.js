@@ -10,6 +10,8 @@ const {
   loginUser,
   logoutUser,
   withdrawUser,
+  getMyPage,
+  updateUser,
 } = require("../controllers/userController");
 
 router
@@ -26,6 +28,12 @@ router
 .route("/logout")
 .get(logoutUser);
 
-router.route("/withdraw", authMiddleware, withdrawUser);
+router
+.route("/mypage")
+.get(authMiddleware, getMyPage)
+.put(authMiddleware, updateUser);
+
+router.route("/withdraw")
+.delete (authMiddleware, withdrawUser);
 
 module.exports = router;

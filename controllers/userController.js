@@ -105,11 +105,50 @@ const withdrawUser = asyncHandler(async(req, res) => {
     res.redirect("/");
 });
 
+// @desc    Show My Page
+// @route   GET /users/mypage
+const getMyPage = (req, res) => {
+    res.render("mypage", { user: req.user });
+};
+
+// @desc    Update User Info
+// @route   PUT /users/mypage
+const updateUser = asyncHandler(async (req, res) => {
+    const { newPassword, confirmPassword } = req.body;
+
+    if (!newPassword || !confirmPassword) {
+        res.status(400);
+        throw new Error("변경할 비밀번호를 모두 입력해주세요.");
+    }
+
+    if (newPassword !== confirmPassword) {
+        res.status(400);
+        throw new Error("비밀번호와 비밀번호 확인이 일치하지 않습니다.");
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    const updatedUser = await User.findByIdAndUpdate(
+        req.user._id,
+        { password: hashedPassword },
+        { new: true }
+    );
+
+    if (updatedUser) {
+        console.log(`비밀번호 변경 완료: ${updatedUser.username}`);
+        res.redirect("/");
+    } else {
+        res.status(400);
+        throw new Error("정보 수정에 실패했습니다.");
+    }
+});
+
 module.exports = {
-  getRegisterForm,
-  registerUser,
-  getLoginForm,
-  loginUser,
-  logoutUser,
-  withdrawUser,
+    getRegisterForm,
+    registerUser,
+    getLoginForm,
+    loginUser,
+    logoutUser,
+    withdrawUser,
+    getMyPage,
+    updateUser,
 };

@@ -11,17 +11,14 @@ const getAllExpenses = asyncHandler(async (req, res) => {
     if (!year) year = now.getFullYear();
     if (!month) month = now.getMonth() + 1;
 
-    // 숫자로 변환 (비교 및 계산용)
     const selectedYear = Number(year);
     const selectedMonth = Number(month);
-
-    // 날짜 범위 계산    
+  
     const paddedMonth = String(selectedMonth).padStart(2, '0');
     const startDate = new Date(`${selectedYear}-${selectedMonth}-01`);
     const endDate = new Date(startDate);
     endDate.setMonth(endDate.getMonth() + 1);
 
-    // DB 검색 조건
     const dbQuery = {
         user_id: req.user._id,
         date: { $gte: startDate, $lt: endDate }
@@ -48,7 +45,6 @@ const getAllExpenses = asyncHandler(async (req, res) => {
     const chartLabels = Object.keys(categoryTotals);
     const chartData = Object.values(categoryTotals);
 
-    // 유저 정보 예산 포함
     const user = await User.findById(req.user._id);
     
     res.render("dashboard", {
@@ -141,8 +137,8 @@ const getExpenseRanking = asyncHandler(async (req, res) => {
     const endDate = new Date(startDate);
     endDate.setMonth(endDate.getMonth() + 1);
 
-    // 모든 사용자의 이번 달 총 지출액 계산
-    const rankingStats = await Expense.aggregate([
+    const allUsers = await User.find({}, '_id');
+    const expenseStats = await Expense.aggregate([
         {
             $match: {
                 date: { $gte: startDate, $lt: endDate }
@@ -153,21 +149,29 @@ const getExpenseRanking = asyncHandler(async (req, res) => {
                 _id: "$user_id",
                 totalAmount: { $sum: "$amount" }
             }
-        },
-        {
-            $sort: { totalAmount: 1 } // (1등 = 가장 절약한 사람)
         }
     ]);
 
-    // 내 등수 찾기
-    const myStat = rankingStats.find(stat => stat._id.toString() === req.user._id.toString());
-    const myTotal = myStat ? myStat.totalAmount : 0;
+    const expenseMap = {};
+    expenseStats.forEach(stat => {
+        expenseMap[stat._id.toString()] = stat.totalAmount;
+    });
 
-    let myRank = rankingStats.findIndex(stat => stat._id.toString() === req.user._id.toString()) + 1;
-    if (myRank === 0) myRank = rankingStats.length + 1;
+    const fullRanking = allUsers.map(user => {
+        return {
+            _id: user._id,
+            totalAmount: expenseMap[user._id.toString()] || 0
+        };
+    });
 
-    const totalUsers = rankingStats.length || 1; // 0으로 나누기 방지
-    const percentile = Math.round((myRank / totalUsers) * 100); // 상위 몇 %인지 계산
+    fullRanking.sort((a, b) => a.totalAmount - b.totalAmount);
+
+    const myIndex = fullRanking.findIndex(item => item._id.toString() === req.user._id.toString());
+    const myRank = myIndex + 1;
+    const myTotal = fullRanking[myIndex].totalAmount;
+
+    const totalUsers = fullRanking.length;
+    const percentile = Math.round((myRank / totalUsers) * 100);
 
     res.render("ranking", {
         user: req.user,
