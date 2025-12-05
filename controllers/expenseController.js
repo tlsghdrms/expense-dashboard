@@ -28,7 +28,7 @@ const getAllExpenses = asyncHandler(async (req, res) => {
         dbQuery.category = category;
     }
     
-    const expenses = await Expense.find(dbQuery).sort({ date: 1});
+    const expenses = await Expense.find(dbQuery).sort({ date: 1 });
 
     const categoryTotals = {};
     let totalSpent = 0;
