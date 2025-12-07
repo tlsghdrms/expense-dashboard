@@ -3,8 +3,7 @@ const dbConnect = require("./config/dbConnect");
 const path = require("path");
 const methodOverride = require("method-override");
 const cookieParser = require("cookie-parser");
-const jwt = require("jsonwebtoken");
-const User = require("./models/userModel");
+const { checkUser } = require("./middlewares/authMiddleware")
 
 const app = express();
 const port = 3000;
@@ -21,25 +20,15 @@ app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride("_method"));
 app.use(cookieParser());
 
-app.get("/", async(req, res) => {
-    let user = null;
-    const token = req.cookies.token;
-
-    if (token) {
-        try {
-            const decoded = jwt.verify(token, process.env.JWT_SECRET);
-            user = await User.findById(decoded.id).select("-password");
-        } catch(error) {
-            user = null;
-        }
-    }
-
-    res.render("index", { user: user });
+// checkUser 미들웨어 하나로 대체
+app.get("/", checkUser, (req, res) => {
+    res.render("index");
 });
 
 // 라우터 등록
 app.use("/users", require("./routes/userRoutes"));
 app.use("/expenses", require("./routes/expenseRoutes"));
+app.use("/admin", require("./routes/adminRoutes"));
 
 app.listen(port, () => {
     console.log(`${port}번 포트에서 서버 실행 중`);

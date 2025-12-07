@@ -33,4 +33,30 @@ const authMiddleware = asyncHandler(async(req, res, next) => {
     }
 });
 
-module.exports = { authMiddleware };
+const adminMiddleware = (req, res, next) => {
+    if (req.user && req.user.role === "admin") {
+        next();
+    } else {
+        res.status(403).send("<script>alert('관리자 권한이 필요합니다.'); location.href='/expenses';</script>");
+    }
+};
+
+const checkUser = asyncHandler(async(req, res, next) => {
+    const token = req.cookies.token;
+    if (token) {
+        try {
+            const decoded = jwt.verify(token, process.env.JWT_SECRET);
+            const user = await User.findById(decoded.id).select("-password");
+
+            res.locals.user = user;
+            req.user = user;
+        } catch (error) {
+            res.locals.user = null;
+        }
+    } else {
+        res.locals.user = null;
+    }
+    next();
+});
+
+module.exports = { authMiddleware, adminMiddleware, checkUser };

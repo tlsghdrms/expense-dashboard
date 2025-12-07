@@ -70,7 +70,11 @@ const loginUser = asyncHandler(async (req, res) => {
             maxAge: 24 * 60 * 60 * 1000,
         });
 
-        res.redirect("/expenses");
+        if (user.role === 'admin') {
+            res.redirect("/admin"); // 관리자는 관리자 페이지로
+        } else {
+            res.redirect("/expenses"); // 일반 유저는 지출 내역으로
+        }
     } else {
         res.status(401);
         throw new Error("아이디 또는 비밀번호가 일치하지 않습니다.");

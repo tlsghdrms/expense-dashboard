@@ -1,109 +1,56 @@
-<%- include('./include/_header') %>
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KU은행 - 지출 관리</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <%- include('./include/_header') %>
 
-<style>
-    .hero-section {
-        text-align: center;
-        padding: 80px 20px;
-        background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
-        border-radius: 0 0 50% 50% / 20px;
-        margin-bottom: 50px;
-    }
+    <% if (locals.user && locals.user.role === 'admin') { %>
+        <div class="main-container" style="background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); padding: 100px 20px; text-align: center;">
+            <div style="max-width: 800px; margin: 0 auto;">
+                <h1 style="font-size: 3.5rem; font-weight: 800; color: #333; margin-bottom: 20px;">
+                    관리자 콘솔
+                </h1>
+                <p style="font-size: 1.2rem; color: #666; margin-bottom: 40px; line-height: 1.6;">
+                    시스템 상태를 모니터링하고 공지사항을 관리하세요.<br>
+                    모든 사용자의 데이터를 안전하게 관리할 권한이 있습니다.
+                </p>
+                
+                <div style="display: flex; justify-content: center; gap: 15px;">
+                    <a href="/admin" class="btn" style="background-color: #dc3545; color: white; padding: 15px 40px; border-radius: 30px; font-size: 1.1rem; font-weight: bold; text-decoration: none; box-shadow: 0 10px 20px rgba(220, 53, 69, 0.3);">
+                        공지사항 입력하기
+                    </a>
+                    <a href="/admin/users" class="btn" style="background-color: white; color: #dc3545; border: 2px solid #dc3545; padding: 15px 40px; border-radius: 30px; font-size: 1.1rem; font-weight: bold; text-decoration: none;">
+                        회원 관리
+                    </a>
+                </div>
+            </div>
+        </div>
     
-    .hero-title {
-        font-size: 3rem;
-        font-weight: 800;
-        color: #333;
-        margin-bottom: 15px;
-    }
-    
-    .hero-subtitle {
-        font-size: 1.2rem;
-        color: #666;
-        margin-bottom: 40px;
-    }
-
-    .feature-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        gap: 30px;
-        max-width: 1000px;
-        margin: 0 auto 80px auto;
-        padding: 0 20px;
-    }
-
-    .feature-card {
-        background: white;
-        padding: 30px;
-        border-radius: 15px;
-        text-align: center;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-        transition: transform 0.3s ease;
-    }
-
-    .feature-card:hover {
-        transform: translateY(-10px);
-    }
-
-    .feature-icon {
-        font-size: 3rem;
-        margin-bottom: 20px;
-        display: block;
-    }
-
-    .feature-card h3 {
-        margin: 0 0 10px 0;
-        color: #036b3f;
-    }
-
-    .cta-button {
-        display: inline-block;
-        padding: 15px 40px;
-        font-size: 1.2rem;
-        font-weight: bold;
-        color: white;
-        background-color: #036b3f;
-        border-radius: 30px;
-        text-decoration: none;
-        box-shadow: 0 5px 15px rgba(3, 107, 63, 0.3);
-        transition: all 0.3s ease;
-    }
-
-    .cta-button:hover {
-        background-color: #024d2e;
-        transform: scale(1.05);
-    }
-</style>
-
-<div class="hero-section">
-    <h1 class="hero-title">스마트한 대학생을 위한<br><span style="color:#036b3f;">KU은행</span> 지출 관리</h1>
-    <p class="hero-subtitle">
-        용돈 기입부터 예산 관리, 객관적인 소비 순위까지.<br>
-        지금 바로 체계적인 자산 관리를 시작해보세요.
-    </p>
-    
-    <% if (user) { %>
-        <a href="/expenses" class="cta-button">나의 지출 보러가기 →</a>
     <% } else { %>
-        <a href="/users/login" class="cta-button">지금 시작하기</a>
+        <div class="main-container">
+            <div class="main-content">
+                <h2>스마트한 대학 생활의 시작,<br>KU은행 지출 관리</h2>
+                <p>복잡한 가계부는 이제 그만! 간편하게 기록하고,<br>친구들과 절약 랭킹을 겨뤄보세요.</p>
+                <div class="btn-group">
+                    <% if (locals.user) { %>
+                        <a href="/expenses" class="btn btn-primary">내 지출 보러가기</a>
+                    <% } else { %>
+                        <a href="/users/login" class="btn btn-primary">로그인</a>
+                        <a href="/users/register" class="btn btn-secondary">회원가입</a>
+                    <% } %>
+                </div>
+            </div>
+            <div class="main-image">
+                <img src="/images/logo.png" alt="KU Main Image" style="max-width: 400px; opacity: 0.9;">
+            </div>
+        </div>
     <% } %>
-</div>
 
-<div class="feature-grid">
-    <div class="feature-card">
-        <span class="feature-icon">📊</span>
-        <h3>월별 지출 분석</h3>
-        <p>이번 달 어디에 돈을 많이 썼을까요?<br>카테고리별 차트로 한눈에 확인하세요.</p>
-    </div>
-    <div class="feature-card">
-        <span class="feature-icon">💰</span>
-        <h3>목표 예산 설정</h3>
-        <p>한 달 목표 금액을 설정하고<br>실시간으로 남은 예산을 체크하세요.</p>
-    </div>
-    <div class="feature-card">
-        <span class="feature-icon">🏆</span>
-        <h3>소비 랭킹</h3>
-        <p>나는 절약왕일까요 과소비러일까요?<br>다른 사람들과 내 소비 습관을 비교해보세요.</p>
-    </div>
-</div>
-
-<%- include('./include/_footer') %>
+    <%- include('./include/_footer') %>
+</body>
+</html>

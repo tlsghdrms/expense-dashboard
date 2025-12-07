@@ -16,11 +16,14 @@ const userSchema = new mongoose.Schema(
         budget: {
             type: Number,
             default: 0
+        },
+        role: {
+            type: String,
+            enum: ["user", "admin"], 
+            default: "user"
         }
     },
-    {
-        timestamps: true,
-    }
+    { timestamps: true, }
 );
 
 module.exports = mongoose.model("User", userSchema);

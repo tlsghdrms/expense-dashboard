@@ -26,8 +26,8 @@ const expenseSchema = new mongoose.Schema(
             required: [true, "날짜를 입력해주세요."],
         },
     },
-    {
-        timestamps: true,
+    { 
+        timestamps: true, 
     }
 );
 
