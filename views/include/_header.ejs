@@ -5,100 +5,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>지출 관리 대시보드</title>
   <link rel="stylesheet" href="/css/style.css">
-  <style>
-    body { margin: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-
-    header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 15px 40px;
-        background-color: #ffffff;
-        border-bottom: 2px solid #036b3f;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-    }
-    
-    header h1 a {
-        display: flex;
-        align-items: center;
-        text-decoration: none;
-        gap: 12px;
-    }
-
-    .logo-img {
-        height: 40px;
-        width: auto;
-    }
-
-    .logo-text {
-        font-size: 1.6rem;
-        font-weight: 800;
-        color: #036b3f;
-        letter-spacing: -1px;
-    }
-
-    .nav-menu {
-        display: flex;
-        gap: 50px; 
-    }
-    .nav-menu a {
-        text-decoration: none;
-        color: #444;
-        font-weight: 600;
-        font-size: 1.2rem;
-        padding: 10px 15px;
-        border-radius: 25px;
-        background-color: transparent; 
-        transition: all 0.2s ease-in-out; 
-    }
-    
-    .nav-menu a:hover {
-        background-color: rgba(3, 107, 63, 0.08); 
-        color: #036b3f;
-    }
-
-    .user-menu {
-        display: flex;
-        align-items: center;
-        gap: 15px;
-    }
-    
-    .user-btn {
-        font-size: 0.9rem;
-        color: #555; text-decoration: none;
-        border: 1px solid #ddd;
-        padding: 6px 14px;
-        border-radius: 4px;
-        transition: background 0.2s;
-    }
-    
-    .user-btn:hover {
-        background-color: #f8f9fa;
-        color: #036b3f;
-        border-color: #036b3f;
-    }
-
-    .auth-link {
-        color: #555;
-        text-decoration: none;
-        font-weight: 600;
-        font-size: 0.95rem;
-    }
-    .auth-link:hover {
-        color: #036b3f;
-        text-decoration: underline;
-    }
-  </style>
 </head>
 <body>
   <header>
     <h1>
         <a href="/">
-            <img src="/images/logo.png" alt="KU Logo" class="logo-img">
-            <span class="logo-text">KU은행</span>
+          <img src="/images/logo.png" alt="KU Logo" class="logo-img">
+          <span class="logo-text">KU은행</span>
         </a>
     </h1>
-
+    
     <nav class="nav-menu">
       <% if (locals.user) { %>
         <a href="/expenses">지출 내역</a>
