@@ -1,6 +1,7 @@
 const asyncHandler = require("express-async-handler");
 const Expense = require("../models/expenseModel");
 const User = require("../models/userModel");
+const Notice = require("../models/noticeModel");
 
 // @desc    Get expenses by month & Category & Budget Info 
 // @route   GET /expenses
@@ -46,6 +47,8 @@ const getAllExpenses = asyncHandler(async (req, res) => {
     const chartData = Object.values(categoryTotals);
 
     const user = await User.findById(req.user._id);
+
+    const recentNotice = await Notice.findOne().sort({ createdAt: -1 });
     
     res.render("dashboard", {
         expenses: expenses,
@@ -55,7 +58,8 @@ const getAllExpenses = asyncHandler(async (req, res) => {
         selectedYear: selectedYear,
         selectedMonth: selectedMonth,
         selectedCategory: category || "all",
-        totalSpent: totalSpent
+        totalSpent: totalSpent,
+        notice: recentNotice
     });
 });
 
@@ -137,7 +141,7 @@ const getExpenseRanking = asyncHandler(async (req, res) => {
     const endDate = new Date(startDate);
     endDate.setMonth(endDate.getMonth() + 1);
 
-    const allUsers = await User.find({}, '_id');
+    const allUsers = await User.find({ role: { $ne: 'admin' } }, '_id');
     const expenseStats = await Expense.aggregate([
         {
             $match: {
@@ -167,11 +171,20 @@ const getExpenseRanking = asyncHandler(async (req, res) => {
     fullRanking.sort((a, b) => a.totalAmount - b.totalAmount);
 
     const myIndex = fullRanking.findIndex(item => item._id.toString() === req.user._id.toString());
-    const myRank = myIndex + 1;
-    const myTotal = fullRanking[myIndex].totalAmount;
+    let myRank, myTotal, percentile;
+
+    if (myIndex === -1) {
+        myRank = "-";
+        myTotal = 0;
+        percentile = 0;
+    } else {
+        myRank = myIndex + 1;
+        myTotal = fullRanking[myIndex].totalAmount;
+        const totalUsers = fullRanking.length;
+        percentile = Math.round((myRank / totalUsers) * 100);
+    }
 
     const totalUsers = fullRanking.length;
-    const percentile = Math.round((myRank / totalUsers) * 100);
 
     res.render("ranking", {
         user: req.user,

@@ -227,6 +227,7 @@ h2.dashboard-title span.highlight {
     gap: 20px;
     box-shadow: 0 2px 10px rgba(0,0,0,0.03);
 }
+<<<<<<< HEAD
 .summary-left {
     flex: 1;
     min-width: 280px;
@@ -765,3 +766,9 @@ button.btn-mypage-withdraw:hover {
     color: var(--ku-dark);  
     text-decoration: underline; 
 }
+=======
+.btn-delete:hover {
+    background-color: #c82333;
+}
+
+>>>>>>> 0b36f178071de6d8d24699ec7ff06b048f03a4f3
