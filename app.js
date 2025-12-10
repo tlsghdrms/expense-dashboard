@@ -28,7 +28,6 @@ app.get("/", checkUser, (req, res) => {
 // 라우터 등록
 app.use("/users", require("./routes/userRoutes"));
 app.use("/expenses", require("./routes/expenseRoutes"));
-app.use("/admin", require("./routes/adminRoutes"));
 
 app.listen(port, () => {
     console.log(`${port}번 포트에서 서버 실행 중`);

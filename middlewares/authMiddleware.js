@@ -33,14 +33,6 @@ const authMiddleware = asyncHandler(async(req, res, next) => {
     }
 });
 
-const adminMiddleware = (req, res, next) => {
-    if (req.user && req.user.role === "admin") {
-        next();
-    } else {
-        res.status(403).send("<script>alert('관리자 권한이 필요합니다.'); location.href='/expenses';</script>");
-    }
-};
-
 const checkUser = asyncHandler(async(req, res, next) => {
     const token = req.cookies.token;
     if (token) {
@@ -59,4 +51,4 @@ const checkUser = asyncHandler(async(req, res, next) => {
     next();
 });
 
-module.exports = { authMiddleware, adminMiddleware, checkUser };
+module.exports = { authMiddleware, checkUser };

@@ -16,15 +16,11 @@
     </h1>
     
     <nav class="nav-menu">
-        <% if (locals.user) { %>
-            <% if (locals.user.role !== 'admin') { %>
-                <a href="/expenses">지출 내역</a>
-                <a href="/expenses/ranking">소비 랭킹</a>
-            <% } else { %>
-                <a href="/admin" style="color: #dc3545;">공지사항</a>
-            <% } %>
-            <a href="/users/mypage">마이페이지</a>
-        <% } %>
+      <% if (locals.user) { %>
+          <a href="/expenses">지출 내역</a>
+          <a href="/expenses/ranking">소비 랭킹</a>
+          <a href="/users/mypage">마이페이지</a>
+      <% } %>
     </nav>
 
     <div class="user-menu">

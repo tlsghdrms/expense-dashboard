@@ -1,54 +1,12 @@
 <%- include('./include/_header') %>
 
 <div class="container">
-<<<<<<< HEAD
     <h2 class="dashboard-title">
         📊 <span class="highlight"><%= selectedMonth %>월</span> 소비 리포트
-=======
-    
-    <% if (typeof notice !== 'undefined' && notice) { %>
-        <div style="
-            background-color: #f1fcf5; 
-            border: 1px solid #c3fae8;
-            color: #0ca678;
-            padding: 15px 20px;
-            border-radius: 12px;
-            margin-bottom: 30px;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
-            animation: fadeIn 0.5s ease-out;
-        ">
-            <div style="font-size: 1.5rem;">📢</div>
-            <div style="flex: 1;">
-                <div style="font-weight: 700; margin-bottom: 4px; font-size: 1rem;">
-                    <%= notice.title %>
-                </div>
-                <div style="font-size: 0.9rem; opacity: 0.9; line-height: 1.4;">
-                    <%= notice.content %>
-                </div>
-            </div>
-            <div style="font-size: 0.8rem; opacity: 0.7; white-space: nowrap;">
-                <%= notice.createdAt ? notice.createdAt.toLocaleDateString() : '' %>
-            </div>
-        </div>
-        
-        <style>
-            @keyframes fadeIn {
-                from { opacity: 0; transform: translateY(-10px); }
-                to { opacity: 1; transform: translateY(0); }
-            }
-        </style>
-    <% } %>
-
-    <h2 style="margin-bottom: 25px; font-size: 1.8rem; border-bottom: none;">
-        📊 <span style="color: #036b3f; font-weight: 800;"><%= selectedMonth %>월</span> 소비 리포트
->>>>>>> 0b36f178071de6d8d24699ec7ff06b048f03a4f3
     </h2>
 
     <div class="summary-card">
-        <div class="summary-left">
+        <div class="summary-left" style="flex: 1.5; min-width: 350px;">
             <h3 class="summary-label">이번 달 총 지출 금액</h3>
             <p class="summary-amount">
                 <%= totalSpent.toLocaleString() %> <span class="unit">원</span>
@@ -67,7 +25,7 @@
                 if(percent >= 80) statusClass = "warning"; 
                 if(percent >= 100) statusClass = "danger"; 
             %>
-                <div class="budget-wrapper">
+                <div class="budget-wrapper" style="width: 100%;">
                     <div class="budget-info">
                         <span>예산 소진율</span>
                         <span><%= Math.round(percent) %>%</span>
@@ -84,7 +42,7 @@
             <% } %>
         </div>
         
-        <div class="summary-right">    
+        <div class="summary-right" style="flex: 1;">    
             <form action="/expenses" method="GET" class="date-filter-form">
                 <input type="hidden" name="category" value="<%= selectedCategory %>">
                 <select name="year" onchange="this.form.submit()" class="date-select year">

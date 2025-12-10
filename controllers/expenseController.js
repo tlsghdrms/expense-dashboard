@@ -1,7 +1,6 @@
 const asyncHandler = require("express-async-handler");
 const Expense = require("../models/expenseModel");
 const User = require("../models/userModel");
-const Notice = require("../models/noticeModel");
 
 // @desc    Get expenses by month & Category & Budget Info 
 // @route   GET /expenses
@@ -47,8 +46,6 @@ const getAllExpenses = asyncHandler(async (req, res) => {
     const chartData = Object.values(categoryTotals);
 
     const user = await User.findById(req.user._id);
-
-    const recentNotice = await Notice.findOne().sort({ createdAt: -1 });
     
     res.render("dashboard", {
         expenses: expenses,
@@ -59,7 +56,6 @@ const getAllExpenses = asyncHandler(async (req, res) => {
         selectedMonth: selectedMonth,
         selectedCategory: category || "all",
         totalSpent: totalSpent,
-        notice: recentNotice
     });
 });
 
