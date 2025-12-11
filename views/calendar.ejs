@@ -1,0 +1,66 @@
+<%- include('./include/_header') %>
+
+<div class="calendar-container">
+    <div class="calendar-header">
+        <% 
+            let prevYear = year;
+            let prevMonth = month - 1;
+            if(prevMonth < 1) { prevMonth = 12; prevYear--; }
+
+            let nextYear = year;
+            let nextMonth = month + 1;
+            if(nextMonth > 12) { nextMonth = 1; nextYear++; }
+        %>
+        <a href="/expenses/calendar?year=<%= prevYear %>&month=<%= prevMonth %>" class="month-nav-btn">
+            &lt; 이전 달
+        </a>
+        
+        <h2>
+            <%= year %>년 <span style="color: var(--ku-green);"><%= month %>월</span>
+        </h2>
+        
+        <a href="/expenses/calendar?year=<%= nextYear %>&month=<%= nextMonth %>" class="month-nav-btn">
+            다음 달 &gt;
+        </a>
+    </div>
+
+    <div class="weekdays-grid">
+        <div class="weekday sun">일</div>
+        <div class="weekday">월</div>
+        <div class="weekday">화</div>
+        <div class="weekday">수</div>
+        <div class="weekday">목</div>
+        <div class="weekday">금</div>
+        <div class="weekday sat">토</div>
+    </div>
+
+    <div class="days-grid">
+        <% for(let i = 0; i < firstDayIndex; i++) { %>
+            <div class="empty-slot"></div>
+        <% } %>
+
+        <% 
+            for(let d = 1; d <= daysInMonth; d++) { 
+                let currentDayOfWeek = (firstDayIndex + d - 1) % 7;
+                let dayClass = "";
+                if(currentDayOfWeek === 0) dayClass = "sun";
+                else if(currentDayOfWeek === 6) dayClass = "sat";
+
+                let isToday = false;
+                const now = new Date();
+                if(year == now.getFullYear() && month == (now.getMonth()+1) && d == now.getDate()) {
+                    isToday = true;
+                }
+        %>
+                <div class="day-card <%= dayClass %> <%= isToday ? 'today' : '' %>">
+                    <% if(isToday) { %><span class="today-badge">오늘</span><% } %>
+                    <div class="date-num"><%= d %></div>
+                    <% if (dailyMap[d]) { %>
+                        <div class="daily-amount">-<%= dailyMap[d].toLocaleString() %></div>
+                    <% } %>
+                </div>
+        <% } %>
+    </div>
+</div>
+
+<%- include('./include/_footer') %>

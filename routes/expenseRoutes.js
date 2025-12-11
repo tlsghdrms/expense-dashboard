@@ -13,33 +13,31 @@ const {
     updateExpense,
     deleteExpense,
     updateBudget,
-    getExpenseRanking
+    getExpenseRanking,
+    getExpenseCalendar
 } = require("../controllers/expenseController");
 
-router
-.route("/")
+router.route("/")
 .get(getAllExpenses);
 
-router
-.route("/ranking")
+router.route("/ranking")
 .get(getExpenseRanking);
 
-router
-.route("/add")
+router.route("/add")
 .get(getAddExpenseForm)
 .post(createExpense);
 
-router
-.route("/budget")
+router.route("/budget")
 .post(updateBudget);
 
-router
-.route("/edit/:id")
+router.route("/calendar")
+.get(getExpenseCalendar);
+
+router.route("/edit/:id")
 .get(getEditExpenseForm)
 .put(updateExpense);
 
-router
-.route("/delete/:id")
+router.route("/delete/:id")
 .delete(deleteExpense);
 
 module.exports = router;

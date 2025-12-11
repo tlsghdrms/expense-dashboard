@@ -192,6 +192,50 @@ const getExpenseRanking = asyncHandler(async (req, res) => {
     });
 });
 
+// @desc Get expense calendar
+// @route GET /expenses/calendar
+const getExpenseCalendar = asyncHandler(async(req, res) => {
+    const { year, month } = req.query;
+    const today = new Date();
+    const currentYear = year ? parseInt(year) : today.getFullYear();
+    const currentMonth = month ? parseInt(month) : today.getMonth() + 1;
+
+    const startDate = new Date(currentYear, currentMonth - 1, 1);
+    const endDate = new Date(currentYear, currentMonth, 1);
+
+    const firstDayIndex = startDate.getDay();
+    const daysInMonth = new Date(currentYear, currentMonth, 0).getDate();
+
+    const dailyStats = await Expense.aggregate([
+        {
+            $match: {
+                user_id: req.user._id,
+                date: { $gte: startDate, $lt: endDate }
+            }
+        },
+        {
+            $group: {
+                _id: { $dayOfMonth: "$date" },
+                total: { $sum: "$amount" }
+            }
+        }
+    ]);
+
+    const dailyMap = {};
+    dailyStats.forEach(stat => {
+        dailyMap[stat._id] = stat.total;
+    });
+
+    res.render("calendar", {
+        year: currentYear,
+        month: currentMonth,
+        firstDayIndex,
+        daysInMonth,
+        dailyMap,
+        user: req.user
+    });
+});
+
 module.exports = {
     getAllExpenses,
     updateBudget,
@@ -200,5 +244,6 @@ module.exports = {
     getEditExpenseForm,
     updateExpense,
     deleteExpense,
-    getExpenseRanking
+    getExpenseRanking,
+    getExpenseCalendar
 };
