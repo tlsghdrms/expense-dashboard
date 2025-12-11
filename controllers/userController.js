@@ -51,8 +51,12 @@ const loginUser = asyncHandler(async (req, res) => {
     const { username, password } = req.body;
     
     if (!username || !password ) {
-        res.status(400);
-        throw new Error("아이디와 비밀번호를 모두 입력해주세요");
+        return res.send(`
+            <script>
+                alert("아이디와 비밀번호를 모두 입력해주세요.");
+                location.href = "/login"; //
+            </script>
+        `);
     }
     
     const user = await User.findOne({ username });
@@ -76,8 +80,12 @@ const loginUser = asyncHandler(async (req, res) => {
         }
 
     } else {
-        res.status(401);
-        throw new Error("아이디 또는 비밀번호가 일치하지 않습니다.");
+        res.send(`
+            <script>
+                alert("아이디 또는 비밀번호가 일치하지 않습니다.");
+                location.href = "/users/login";
+            </script>
+        `);
     }
 });
 
