@@ -29,6 +29,28 @@ app.get("/", checkUser, (req, res) => {
 app.use("/users", require("./routes/userRoutes"));
 app.use("/expenses", require("./routes/expenseRoutes"));
 
+// 없는 페이지(404) 관리
+app.use((req, res, next) => {
+    res.status(404).send(`
+        <script>
+            alert("페이지를 찾을 수 없습니다.");
+            location.href = "/";
+        </script>    
+    `);
+});
+
+// 글로벌 에러 핸들러
+app.use((err, req, res, next) => {
+    const statusCode = res.statusCode ? res.statusCode : 500;
+    res.status(statusCode);
+    res.send(`
+        <script>
+            alert("${err.message}"); 
+            history.back();
+        </script>
+    `);
+});
+
 app.listen(port, () => {
     console.log(`${port}번 포트에서 서버 실행 중`);
 });

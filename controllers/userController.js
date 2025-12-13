@@ -16,19 +16,26 @@ const registerUser = asyncHandler(async (req, res) => {
     const { username, password } = req.body;
 
     if(!username || !password) {
-        res.status(400);
-        throw new Error("아이디와 비밀번호를 모두 입력해주세요");
+        return res.send(`
+            <script>
+                alert("아이디와 비밀번호를 모두 입력해주세요.");
+                history.back();
+            </script>
+        `);
     }
 
     const userExists = await User.findOne({ username });
 
     if (userExists) {
-        res.status(400);
-        throw new Error("이미 존재하는 아이디입니다.");
+        return res.send(`
+            <script>
+                alert("이미 존재하는 아이디입니다.");
+                location.href = "/users/register";
+            </script>
+        `);
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
-
     const user = await User.create({ username, password: hashedPassword });
 
     if (user) {
@@ -120,7 +127,7 @@ const withdrawUser = asyncHandler(async(req, res) => {
 // @desc    Show My Page
 // @route   GET /users/mypage
 const getMyPage = (req, res) => {
-    res.render("mypage", { user: req.user });
+    res.render("mypage", { user: req.user, error: null });
 };
 
 // @desc    Update User Info
@@ -129,13 +136,31 @@ const updateUser = asyncHandler(async (req, res) => {
     const { newPassword, confirmPassword } = req.body;
 
     if (!newPassword || !confirmPassword) {
-        res.status(400);
-        throw new Error("변경할 비밀번호를 모두 입력해주세요.");
+        return res.send(`
+            <script>
+                alert("변경할 비밀번호를 모두 입력해주세요.");
+                history.back();
+            </script>
+        `);
     }
 
     if (newPassword !== confirmPassword) {
-        res.status(400);
-        throw new Error("비밀번호와 비밀번호 확인이 일치하지 않습니다.");
+        return res.send(`
+            <script>
+                alert("비밀번호와 비밀번호 확인이 일치하지 않습니다.");
+                history.back();
+            </script>
+        `);
+    }
+
+    const currentUser = await User.findById(req.user._id);
+    const isSamePassword = await bcrypt.compare(newPassword, currentUser.password);
+
+    if (isSamePassword) {
+        return res.render("mypage", { 
+            user: req.user, 
+            error: "이미 사용 중인 비밀번호 입니다." 
+        });
     }
 
     const hashedPassword = await bcrypt.hash(newPassword, 10);
@@ -147,7 +172,12 @@ const updateUser = asyncHandler(async (req, res) => {
 
     if (updatedUser) {
         console.log(`비밀번호 변경 완료: ${updatedUser.username}`);
-        res.redirect("/");
+        res.send(`
+            <script>
+                alert("비밀번호가 성공적으로 변경되었습니다. 다시 로그인해주세요.");
+                location.href = "/users/logout";
+            </script>
+        `);
     } else {
         res.status(400);
         throw new Error("정보 수정에 실패했습니다.");
