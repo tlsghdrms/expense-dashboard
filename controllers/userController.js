@@ -119,8 +119,6 @@ const withdrawUser = asyncHandler(async(req, res) => {
         path: "/",
     });
 
-    console.log(`회원 탈퇴 완료: ${req.user.username}`);
-
     res.redirect("/");
 });
 

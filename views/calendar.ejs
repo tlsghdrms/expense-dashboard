@@ -56,7 +56,7 @@
                     <% if(isToday) { %><span class="today-badge">오늘</span><% } %>
                     <div class="date-num"><%= d %></div>
                     <% if (dailyMap[d]) { %>
-                        <div class="daily-amount">-<%= dailyMap[d].toLocaleString() %></div>
+                        <div class="daily-amount"><%= dailyMap[d].toLocaleString() %></div>
                     <% } %>
                 </div>
         <% } %>
